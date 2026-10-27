@@ -1,0 +1,23 @@
+# ==============================================================================
+# Dependencias del Proyecto: Chatbot Académico RAG
+# ==============================================================================
+
+# --- Etapa 1: Interfaz gráfica y configuración base (Requeridas ahora) ---
+customtkinter>=5.2.0
+python-dotenv>=1.0.0
+
+# --- Etapa 2: Extracción de documentos (Habilitada) ---
+pypdf>=4.0.0
+
+# --- Etapa 3: Embeddings y Base Vectorial local (Habilitada) ---
+chromadb>=0.4.0
+
+# --- Etapa 4: API Gratuita de Google Gemini (Habilitada) ---
+google-genai>=1.0.0
+
+# --- Etapa 6: Procesamiento de imágenes / OCR (Habilitada) ---
+pillow>=10.0.0
+pytesseract>=0.3.10
+
+# --- Etapa 8: Empaquetado y distribución (Se instalará en la Etapa 8) ---
+# pyinstaller>=6.0.0

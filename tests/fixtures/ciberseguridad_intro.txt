@@ -1,0 +1,12 @@
+# Universidad Nacional - Cátedra de Ciberseguridad
+# Apunte Oficial: Fundamentos de la Seguridad Informática
+
+1. Principios Fundamentales (Tríada CIA)
+- Confidencialidad: Garantizar que la información sea accesible únicamente al personal autorizado. Se aplican técnicas de cifrado simétrico y asimétrico.
+- Integridad: Proteger la exactitud y totalidad de la información y sus métodos de procesamiento. Se verifica mediante funciones hash criptográficas como SHA-256.
+- Disponibilidad: Asegurar que los usuarios autorizados tengan acceso a la información y a los activos asociados cuando lo requieran.
+
+2. Amenazas y Vulnerabilidades Comunes
+- Ataques de Ingeniería Social (Phishing, Spear Phishing).
+- Malware: Ransomware, Spyware, Troyanos.
+- Ataques a nivel de red: Denegación de Servicio Distribuida (DDoS) y Man-in-the-Middle (MitM).

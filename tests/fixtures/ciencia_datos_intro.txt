@@ -1,0 +1,14 @@
+# Universidad Nacional - Cátedra de Ciencia de Datos
+# Apunte Oficial: Introducción a la Ciencia de Datos y Machine Learning
+
+1. Ciclo de Vida de los Datos (CRISP-DM)
+- Comprensión del Negocio: Definición de objetivos e hipótesis de trabajo.
+- Comprensión de los Datos: Recolección inicial, exploración y descripción estadística.
+- Preparación de los Datos: Limpieza de valores nulos, imputación, normalización y codificación de variables categóricas.
+- Modelado: Selección y entrenamiento de algoritmos supervisados y no supervisados.
+- Evaluación: Análisis de métricas (Precisión, Recall, F1-Score, RMSE).
+- Despliegue: Integración del modelo en entornos productivos.
+
+2. Bibliotecas Esenciales en Python
+- NumPy y Pandas para manipulación matricial y estructuras tabulares (DataFrames).
+- Scikit-Learn para algoritmos clásicos de regresión, clasificación y clustering.

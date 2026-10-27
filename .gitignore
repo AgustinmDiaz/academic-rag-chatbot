@@ -1,0 +1,43 @@
+# Entornos virtuales
+.venv/
+venv/
+env/
+ENV/
+
+# Archivos de credenciales y secretos
+.env
+*.key
+*.pem
+
+# Archivos de caché de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# Datos locales del usuario (para no subir apuntes personales ni base vectorial pesada a git)
+data/uploads/
+data/vectordb/
+*.sqlite3
+
+# Distribución y compilación
+build/
+dist/
+*.spec
+*.app
+*.exe
+*.dmg
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Configuracion local y secretos
+.env
+.env.*
+!.env.example
+
+# Datos locales y metadatos de documentos
+data/documents_meta.json
+.DS_Store
