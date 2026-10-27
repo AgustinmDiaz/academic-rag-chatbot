@@ -1,0 +1,108 @@
+name: Build Windows executable
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "main.py"
+      - "requirements.txt"
+      - "src/**"
+      - ".github/workflows/build-windows.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v7
+
+      - name: Preparar Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          architecture: "x64"
+
+      - name: Instalar Tesseract OCR
+        shell: pwsh
+        run: |
+          choco install tesseract --yes --no-progress
+
+          $tesseractDir = Join-Path $env:ProgramFiles "Tesseract-OCR"
+          $tesseractExe = Join-Path $tesseractDir "tesseract.exe"
+
+          if (-not (Test-Path $tesseractExe)) {
+            throw "No se encontro tesseract.exe en $tesseractDir"
+          }
+
+          New-Item -ItemType Directory -Force -Path "vendor\tesseract" | Out-Null
+
+          Copy-Item `
+            -Path (Join-Path $tesseractDir "*") `
+            -Destination "vendor\tesseract" `
+            -Recurse -Force
+
+          $tessdata = Join-Path (Get-Location) "vendor\tesseract\tessdata"
+          New-Item -ItemType Directory -Force -Path $tessdata | Out-Null
+
+          foreach ($language in @("eng", "spa")) {
+            $url = "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/main/${language}.traineddata"
+            $destination = Join-Path $tessdata ($language + ".traineddata")
+            Invoke-WebRequest -Uri $url -OutFile $destination
+          }
+
+          if (
+            -not (Test-Path (Join-Path $tessdata "eng.traineddata")) -or
+            -not (Test-Path (Join-Path $tessdata "spa.traineddata"))
+          ) {
+            throw "Faltan los archivos de idioma de Tesseract."
+          }
+
+      - name: Instalar dependencias de Python
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip install pyinstaller pytest
+
+      - name: Ejecutar pruebas
+        run: python -m pytest -q
+
+      - name: Compilar aplicacion de Windows
+        shell: pwsh
+        run: |
+          python -m PyInstaller `
+            --noconfirm `
+            --clean `
+            --windowed `
+            --name AcademicRAGChatbot `
+            --collect-all customtkinter `
+            --collect-all chromadb `
+            --collect-all onnxruntime `
+            --collect-all tokenizers `
+            --collect-all tqdm `
+            --collect-all google.genai `
+            --collect-submodules src `
+            --add-data "vendor\tesseract;tesseract" `
+            main.py
+
+          if (-not (Test-Path "dist\AcademicRAGChatbot\AcademicRAGChatbot.exe")) {
+            throw "No se genero el ejecutable de Windows."
+          }
+
+          Compress-Archive `
+            -Path "dist\AcademicRAGChatbot" `
+            -DestinationPath "dist\AcademicRAGChatbot-Windows.zip" `
+            -Force
+
+      - name: Publicar ejecutable como artefacto
+        uses: actions/upload-artifact@v7
+        with:
+          name: AcademicRAGChatbot-Windows
+          path: dist/AcademicRAGChatbot-Windows.zip
+          if-no-files-found: error
+          retention-days: 14

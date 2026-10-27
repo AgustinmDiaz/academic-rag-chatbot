@@ -12,6 +12,7 @@ from typing import List, Dict, Any, Optional
 import re
 import shutil
 
+from src.utils.paths import get_bundle_dir
 from pypdf import PdfReader
 from pypdf.errors import PdfReadError
 
@@ -67,10 +68,44 @@ class DocumentExtractor:
         return text.strip()
 
     @classmethod
+    def _configure_tesseract(cls) -> None:
+        """Busca primero el motor OCR incluido en la aplicación."""
+        bundle_dir = get_bundle_dir()
+
+        candidates = (
+            bundle_dir / "tesseract" / "tesseract.exe",
+            bundle_dir / "tesseract" / "tesseract",
+            bundle_dir / "tesseract.exe",
+            bundle_dir / "tesseract",
+        )
+
+        for candidate in candidates:
+            if candidate.is_file():
+                pytesseract.pytesseract.tesseract_cmd = str(candidate)
+                return
+
+        system_tesseract = shutil.which("tesseract")
+        if system_tesseract:
+            pytesseract.pytesseract.tesseract_cmd = system_tesseract
+
+    @classmethod
+    def _tesseract_config(cls) -> str:
+        """Usa los datos de idioma que acompañan al motor OCR empaquetado."""
+        cls._configure_tesseract()
+
+        executable = Path(pytesseract.pytesseract.tesseract_cmd)
+        tessdata_dir = executable.parent / "tessdata"
+
+        if tessdata_dir.is_dir():
+            return f'--tessdata-dir "{tessdata_dir}"'
+
+        return ""
+
+    @classmethod
     def is_tesseract_available(cls) -> bool:
-        """Comprueba si el binario de Tesseract OCR está instalado y disponible en el PATH del sistema."""
-        if shutil.which("tesseract") is not None:
-            return True
+        """Comprueba si el motor OCR configurado puede ejecutarse."""
+        cls._configure_tesseract()
+
         try:
             pytesseract.get_tesseract_version()
             return True
@@ -164,7 +199,7 @@ class DocumentExtractor:
         if cls.is_tesseract_available():
             try:
                 with Image.open(file_path) as img:
-                    raw_text = pytesseract.image_to_string(img, lang="spa+eng")
+                    raw_text = pytesseract.image_to_string(img, lang="spa+eng", config=cls._tesseract_config())
             except Exception as e:
                 print(f"[DocumentExtractor] Advertencia en Tesseract local: {e}")
                 raw_text = ""
