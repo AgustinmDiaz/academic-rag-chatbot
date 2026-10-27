@@ -21,3 +21,7 @@ pytesseract>=0.3.10
 
 # --- Etapa 8: Empaquetado y distribución (Se instalará en la Etapa 8) ---
 # pyinstaller>=6.0.0
+
+# Dependencias para los embeddings locales de ChromaDB
+tokenizers>=0.20.0
+tqdm>=4.66.0
